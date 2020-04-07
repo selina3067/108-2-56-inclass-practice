@@ -104,11 +104,67 @@ print(`小明108學年課表C`)
 ##Github commit
 
 ```{r}
+authorValues <- 
+  list( # 由c() 改list(), 元素命名
+    name="Martin老師", 
+    email="mtlin@gm.ntpu.edu.tw", time="2020-03-25T07:17:40Z"
+  )
+committerValues <- 
+  list( # 由c() 改list(), 元素命名
+    name="emilyluckey", 
+    email="emily007@gmail.com", time="2020-03-26T08:18:40Z"
+  )
+
 commit <- list(
-  author = c(),
-  commiter= list(),
-  message=
-  
+  author=authorValues,
+  commmitter=committerValues,
+  message="update"
 )
+
+print(commit)
+```
+
+```{r}
+library(jsonlite)
+toJSON(commit)
+```
+
+```{r}
+`小明的成績`<- list(
+  studentname="小明",
+  
+  semester= c( 
+    `108學年度第一學期`=list(
+      list(
+      TeacherName="Alice老師",
+      SubjectName="個體經濟學",
+      score=85),
+      list(
+      TeacherName="Mark老師",
+      SubjectName="總體經濟學",
+      score=73)
+      ),
+   `108學年度第二學期`=list(
+      list(
+      TeacherName="Jason老師",
+      SubjectName="作業研究",
+      score=90)
+  ))
+)
+print(`小明的成績`)
+```
+
+```{r}
+library(jsonlite)
+fromJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization=rdec-key-123-45678-011121314&format=JSON") ->
+  weather_next36hours
+```
+
+```{r}
+save(`小明的成績`,commit,file="0408practice.Rda")
+```
+
+```{r}
+load("0408practice.Rda")
 ```
 

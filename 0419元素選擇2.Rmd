@@ -1,0 +1,239 @@
+---
+title: "20200419list2"
+author: "Chia Ning Lee"
+date: "2020/4/19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+listExample <- 
+  list(
+    student="小明",
+    `學期`=list(
+      `108-1`=list(
+        list(
+          name="個體經濟學",
+          teacher="Alice",
+          grade=85
+        )
+      ),
+      `108-2`=list(
+        list(
+          name="總體經濟學",
+          teacher="Mark",
+          grade=78
+        )
+      )
+    )
+  )
+
+str(listExample)
+```
+
+```{r}
+get1 <- listExample[["學期"]]
+get2 <- listExample["學期"]
+```
+
+
+```{r}
+get1
+```
+
+```{r}
+A <- get1$`108-1`[[1]]$teacher
+A
+```
+
+```{r}
+str(get2)
+```
+
+```{r}
+B <- get2[["學期"]]$`108-1`[[1]]$teacher
+```
+
+
+```{r}
+B
+```
+
+```{r}
+vector1 <- c(a=1,b=3,c=4)
+vector1[["a"]]
+vector1[c("a","c")]
+vector1$a
+```
+
+```{r}
+today <- list(
+  list("台北市",c(highest_temp = 25),c(lowest_temp = 18)),
+  list("新北市",c(highest_temp = 24),c(lowest_temp = 15)))
+str(today)
+```
+
+```{r}
+#取today的25度
+today_temp <- today[[1]][[2]]
+today_temp
+```
+
+```{r}
+#修改一下寫法
+today1 <- list(
+  list("台北市",
+       highest_temp=c(highest_temp = 25),
+       lowest_temp=c(lowest_temp = 18)),
+  list("新北市",
+       highest_temp=c(highest_temp = 24),
+       lowest_temp=c(lowest_temp = 15))
+  )
+str(today1)
+```
+```{r}
+#在選擇一次
+today1[[1]]$ highest_temp
+today1[[1]][[2]]
+```
+
+```{r}
+tomorrow <- list(
+  list("台北市",c(highest_temp = 25),c(lowest_temp = 18)),
+  list("新北市",c(highest_temp = 24),c(lowest_temp = 15)))
+str(tomorrow)
+weather <- list(today,tomorrow)
+```
+
+```{r}
+a <- c("1","b","TRUE")
+a
+a[[2]] <- "c" # 元素存在: 替換
+a[[4]] <- "7" # 元素不存在： 增加
+a[c(5,6)] <- c("J", "K")
+a
+```
+
+```{r}
+a[[7]] <-"Johnson"
+a <- c(a,"Mary") 
+
+a
+```
+
+
+```{r}
+library(lubridate)
+list1 <- 
+  list(
+    list(
+      name="Jack",
+      birthday=ymd("1998-03-21"),
+      status=c(height=177, weight=80)
+    )
+  )
+
+str(list1)
+```
+
+```{r}
+# 更改日期
+list1[[1]]$birthday <- ymd("1997-03-21")
+
+# 新增資料
+list1[[2]] <- list(
+  name="Mary",
+  birthday=ymd("1998-08-24")
+)
+
+str(list1)
+```
+
+```{r}
+#替Mary依Jack的記錄方式增加身高163，體重45。
+list1[[2]][["status"]]=c(height=163,weight=45)
+#將Jack的身高改成176。
+list1[[1]]$status=c(height=176, weight=80)
+str(list1)
+```
+```{r}
+list1[[1]][["age"]] <- 21
+list1[[2]]["age"] <- list(21)
+
+# 改變「一個」時，使用[[ ]]比較不會錯。
+str(list1)
+```
+
+```{r}
+list1[[2]][c("bloodtype","registered")]<-list("AB",TRUE)
+str(list1)
+```
+
+```{r}
+listExample <- 
+  list(
+    student="小明",
+    `學期`=list(
+      `108-1`=list(
+        list(
+          name="個體經濟學",
+          teacher="Alice",
+          grade=85
+        )
+      ),
+      `108-2`=list(
+        list(
+          name="總體經濟學",
+          teacher="Mark",
+          grade=78
+        )
+      )
+    )
+  )
+# 有多少位置可選：
+length(listExample)
+
+```
+
+```{r}
+str(listExample)
+```
+
+```{r}
+listExample[[2]]$`108-1`[[2]] <- list(name="產業經濟學")
+
+listExample[[2]][[1]][[2]][c("teacher","grade")]<-list("Wen",88)
+str(listExample)
+```
+
+```{r}
+print(a)
+a[c(1,3)]
+a[-c(1,3)]
+a[c(-2)]
+
+#記得要回存
+a<-a[-c(1,3)]
+```
+
+```{r}
+#刪除Jack的status.
+#刪除Mary的status, blookType.
+str(list1)
+list1[[1]][c(-3)]->list1[[1]]
+list1[[2]][-c(3,5)] ->list1[[2]]
+
+str(list1)
+
+```
+
+```{r}
+str(list1)
+list1[[2]][c(1,2)] <- NULL
+str(list1)
+```
+
+

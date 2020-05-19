@@ -1,0 +1,150 @@
+---
+title: "0518類別資料運算"
+author: "Chia Ning Lee"
+date: "2020/5/18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(stringr)
+char2 <- c("蔡英文","習近平","Donald Trump","蔡頭") 
+factor2 <- factor(char2)
+levels(factor2)
+
+sort(
+  str_sub(char2,1,1)
+)
+
+sort(
+  str_sub(char2,2,2)
+)
+
+Sys.getlocale("LC_COLLATE")
+```
+
+```{r}
+jsonlite::fromJSON("https://od.cdc.gov.tw/eic/Day_Confirmation_Age_County_Gender_19CoV.json") -> covid19
+```
+
+```{r}
+# 不可排序類別：性別、縣市、是否境外移入
+covid19$縣市 <- 
+  factor(covid19$縣市)
+covid19$性別 <-
+  factor(covid19$性別)
+covid19$是否為境外移入 <-
+  factor(
+    covid19$是否為境外移入
+  )
+```
+
+```{r}
+# 可排序類別資料：年齡層
+covid19$年齡層 <-
+  factor(
+    covid19$年齡層,
+    ordered=TRUE
+  )
+```
+
+```{r}
+levels(covid19$縣市)
+levels(covid19$性別)
+levels(covid19$是否為境外移入)
+```
+
+```{r}
+covid19$年齡層
+levels(covid19$年齡層)
+```
+
+```{r}
+#重新設定
+levels(covid19$性別)
+covid19$性別 <- factor(covid19$性別,c("男","女"))
+levels(covid19$性別)
+```
+
+```{r}
+jsonlite::fromJSON(
+  "https://www.dropbox.com/s/jckqryeh5zeat5w/regionPopulation.json?dl=1"
+) -> population
+unlist(population) -> population
+```
+
+```{r}
+print(population)
+class(population) # 判斷出是named integer vector
+names(population) # 元素名稱是台灣各縣市
+```
+
+```{r}
+#留下covid19裡面有的縣市
+levels(covid19$縣市)->levelsInData
+population[levelsInData]->population
+
+
+```
+```{r}
+#將population由大排到小
+sort(population,decreasing = T) ->population
+population
+```
+```{r}
+#存取排完後的元素名稱
+newLevels<-names(population)
+newLevels
+```
+```{r}
+#重設縣市排序
+covid19$縣市<-factor(
+  covid19$縣市,
+  levels=newLevels
+)
+
+levels(covid19$縣市)
+```
+
+```{r}
+#用年齡區間起始數字排序
+levels(covid19$年齡層)
+```
+```{r}
+level_names <-levels(covid19$年齡層)
+startingAges <- stringr::str_extract(
+  level_names,
+  "^[0-9]+"
+)
+startingAges
+```
+
+```{r}
+#將startingAges 變成name integer factor
+startingAges<-as.integer(startingAges)
+names(startingAges)<-level_names
+startingAges
+```
+
+```{r}
+sort(startingAges) ->startingAges
+```
+
+```{r}
+#重設levels排序
+covid19$`年齡層`<-
+  factor(
+  covid19$`年齡層`,
+  levels=names(startingAges)
+  )
+levels(covid19$年齡層)
+
+```
+
+```{r}
+
+```
+

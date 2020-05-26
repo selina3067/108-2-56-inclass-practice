@@ -131,6 +131,7 @@ startingAges
 
 ```{r}
 sort(startingAges) ->startingAges
+startingAges
 ```
 
 ```{r}
@@ -141,7 +142,285 @@ covid19$`年齡層`<-
   levels=names(startingAges)
   )
 levels(covid19$年齡層)
+covid19$年齡層
 
+```
+
+```{r}
+factor1 <- factor(
+  c("A","A","C","A","D","F","D","D")
+)
+factor1
+
+levels(factor1) <-c("優","佳","尚可","普")
+factor1
+```
+
+```{r}
+levels(factor1)[[1]]<-"excellent"
+levels(factor1)[c(3,4)]<- c("C","D")
+factor1
+```
+
+```{r}
+factor2<-factor(c("新北市","台北市","台中市","彰化市","基隆市","苗栗縣","苗栗縣"))
+factor2
+```
+
+```{r}
+levels(factor2)<- c("北部","北部","中部","中部","北部","中部","中部")
+factor2
+```
+
+```{r}
+factor1 <- factor(c("0-4歲","5-9歲","10歲以上","0-4歲","5-9歲","5-9歲","10歲以上"))
+factor1
+```
+
+```{r}
+levels(factor1)<-c("0-9歲","10歲以上","0-9歲")
+factor1
+```
+
+```{r}
+covid19$`地區` <- covid19$`縣市`
+levels(covid19$`地區`)
+currentLevels <- levels(covid19$`地區`)
+
+# 整併
+north_regex <- "宜蘭縣|基隆市|[台臺]北市|新北市|桃園市|新竹市|新竹縣"
+middle_regex <- "苗栗縣|[台臺]中市|彰化縣|南投縣|雲林縣"
+south_regex <-
+  "嘉義市|嘉義縣|[台臺]南[縣市]|高雄市|屏東縣|澎湖縣"
+east_regex <- "花蓮縣|台東縣"
+
+
+currentLevels <- str_replace(currentLevels, 
+            north_regex, "北部")
+currentLevels <- str_replace(currentLevels, 
+            middle_regex, "中部")
+currentLevels <- str_replace(currentLevels, 
+            south_regex, "南部")
+newLevels <- str_replace(currentLevels, 
+            east_regex, "東部")
+
+newLevels
+levels(covid19$地區) 
+levels(covid19$地區) <- newLevels
+covid19$地區
+
+
+
+```
+```{r}
+levels(covid19$年齡層)
+
+# 創造10歲間距的所有可能
+start <-seq(5,55,by=10)
+end<- seq(14,54,by=10)
+middleLevels <-
+  rep(
+    paste0(start,"-",end),
+    each=2
+  )
+newLevels <- c("4",middleLevels,"65+","65+")
+
+levels(covid19$年齡層) <- newLevels
+levels(covid19$年齡層)
+covid19$年齡層
+```
+```{r}
+factor3 <- 
+  factor(c("好","好","普通","普通", "好"))
+levels(factor3)
+```
+
+```{r}
+factor3
+factor3[[6]] <-"差"
+```
+```{r}
+#先擴大levels
+levels(factor3) <- c(levels(factor3),"差")
+factor3
+factor3[[6]]<-"差"
+factor3
+
+
+#差不多的寫法2
+levels(factor3)[[4]] <-"極差"
+factor3[[7]]<-"極差"
+factor3
+```
+
+```{r}
+#將covid19$性別的levels名稱男、女改Male、Female
+levels(covid19$性別)[c(1,2)]<-c("Male","Female")
+covid19$性別
+```
+```{r}
+jsonlite::fromJSON("https://data.ntpc.gov.tw/od/data/api/EDC3AD26-8AE7-4916-A00B-BC6048D19BF8?$format=json") ->
+  garbageRoutes
+```
+
+```{r}
+#垃圾車第一小題
+
+#創造一個strip01
+strip01<-paste0("[:graph:]+","路線")
+#檢查strip01
+strip01
+#從garbageRoutes$linename以strip01擷取出所需的資料存到a
+a<-str_extract_all(garbageRoutes$linename,strip01)
+#unlist原本為list檔案的a並存到a1並改成factor
+a1<-factor(unlist(a))
+#替換原本的garbageRoutes$route 
+garbageRoutes$route<-a1
+
+```
+
+```{r}
+#垃圾車第二小題
+route01<-garbageRoutes$route
+levels(route01)
+
+#summary檢視factor的個數並sort做排序
+sort(summary(route01))
+names(sort(summary(route01)))
+#取出names並存入new_order
+new_order=names(sort(summary(route01)))
+new_order
+
+#回存
+garbageRoutes$route<-factor(
+  garbageRoutes$route,
+  new_order
+)
+
+
+
+#排序過後的levels回存到route01
+#levels(route01)<-c(new_order)
+#route01
+#levels(route01)
+
+#排序過後的route01回存到garbageRoutes$route
+#levels(garbageRoutes$route) <-levels(route01)
+
+#檢查一下
+levels(garbageRoutes$route) 
+
+```
+
+```{r}
+#垃圾車第三小題
+#檢測可能出現的levels
+levels(factor(unlist(garbageRoutes$linename)))
+
+#設立一個strip02
+strip02<-"(?<=線)([:graph:]+|[:blank:]+[:graph:]+)"
+b<-str_extract_all(garbageRoutes$linename,strip02)
+
+#試一下空白的地方會跑出什麼->跑出character(0)
+levels(factor(unlist(b)))
+levels(factor(unlist(garbageRoutes$linename)))
+b[[822]]
+
+#把長度=0的換成全天
+b[lengths(b)==0] <-"全天"
+
+order01<-c("(一、四)下午","下午","下午(1.4版)","晚上"," 晚上1","全天")
+#新增一個garbageRoutes$time，把b的內容塞進去
+garbageRoutes$time<-factor(
+  unlist(b),
+  levels=order01
+  )
+#把晚上1換成晚上
+levels(garbageRoutes$time)
+levels(garbageRoutes$time)[[5]]<-"晚上"
+
+#再檢查一次levels
+levels(garbageRoutes$time)
+
+
+#檢查
+levels(factor(unlist(garbageRoutes$linename)))
+levels(factor(unlist(b)))
+```
+```{r}
+#垃圾車第四小題
+levels(garbageRoutes$time)
+levels(garbageRoutes$time)[[3]]<-"下午"
+
+#最後檢查
+levels(garbageRoutes$time)
+```
+
+
+```{r}
+factor1 <- factor(
+  c("A","A","C","A","D","F","D","D")
+)
+factor1
+
+levels(factor1) <- c("優","佳","尚可","普")
+
+factor1
+```
+
+```{r}
+threeHeigths <- c(Gary=178, John=182, Cam=175)
+```
+
+```{r}
+sort(threeHeigths,decreasing = T)->sorted_heights
+
+names(sorted_heights)-> sorted_persons
+
+sorted_persons[[1]]->highestPerson
+```
+
+```{r}
+library(magrittr)
+```
+
+```{r}
+sort(threeHeigths,decreasing=T)%>%
+names(.)%>%
+.[[1]]->highestPerson
+```
+
+```{r}
+# 由cities創出每個元素對應的北部、東部、中部region factor
+cities <- factor(c("台北","花蓮","台東","台中"))
+levels(cities)
+```
+
+```{r}
+library(stringr)
+region <-cities
+levels(region)->currentLevels
+str_replace(currentLevels,"台北","北部") -> currentLevels1
+str_replace(currentLevels1,"花蓮|台東","東部") -> currentLevels2
+str_replace(currentLevels2,"台中","中部") -> regionLevels
+regionLevels->levels(region)
+```
+
+```{r}
+levels(region)%>%
+str_replace(.,"台北","北部")%>%
+str_replace(.,"花蓮|台東","東部")%>%
+str_replace(.,"台中","中部")->regionLevels1
+
+
+```
+
+```{r}
+levels(region) %>% 
+  str_replace("台北","北部") %>%
+  str_replace("花蓮|台東","東部") %>%
+  str_replace("台中","中部") -> 
+  levels(region)
 ```
 
 ```{r}

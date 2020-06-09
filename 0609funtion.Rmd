@@ -1,0 +1,122 @@
+---
+title: "20200609funtion"
+author: "Chia Ning Lee"
+date: "2020/6/9"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# p=1.2的需求量
+p=1.2
+qd <- 10-5*p # 小心是5*p, 不能寫5p
+# p=1.3的需求量
+p=1.3
+qd <- 10-5*p
+# p=1.4的需求量
+p=1.4
+qd <- 10-5*p
+```
+
+```{r}
+demand <- # 創造一個物件叫demand
+  function(p){ # 定義這個物件為函數
+    q_d <- 10-5*p # 小心是5*p, 不能寫5p
+  }
+```
+
+```{r}
+#practice
+demand <-
+  function(p){
+    q_d <-10-5*p
+  }
+```
+
+```{r}
+print(demand(1.5))
+```
+
+```{r}
+demand_return <- 
+  function(p){
+    q_d <- 10-5*p
+    return(q_d)
+  }
+# 印在螢幕，但Global Environment並不會有q_d
+demand_return(1.2)
+```
+
+```{r}
+#practice
+demand_return<-
+  function(p){
+    q_d<-10-5*p
+    return(q_d)
+  }
+
+demand_return(1.2)
+```
+
+```{r}
+#電腦暫存
+.Last.value
+```
+
+```{r}
+# 要長久存在Global Environment要指定物件名稱（不要求與q_d同名）
+demand_return(1.2) -> q_d1.2
+```
+```{r}
+```
+
+
+```{r}
+#practice
+demand_return(1.2)->q_d1.2
+```
+
+```{r}
+#practice供給函數
+supply<-
+  function(p){
+    sup_value<- 0+2*p
+    return(sup_value)
+  }
+supply(5)->sup_value_5
+```
+
+```{r}
+dateInput<- lubridate::today()
+locationInput<-"新北市"
+```
+```{r}
+jsonlite::fromJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization=rdec-key-123-45678-011121314&format=JSON") ->
+  weather_next36hours
+```
+
+```{r}
+# 找出符合地點的天氣資訊：weatherAtLocation
+(weather_next36hours$cwbopendata$dataset$location$locationName == locationInput) -> pick_location # 可挑出locationInput的「要/不要」向量
+
+weather_next36hours$cwbopendata$dataset$location$weatherElement[pick_location][[1]] -> weatherAtLocation
+
+# 在weatherAtLocation找出符合時間的天氣資訊
+
+(weatherAtLocation$elementName=="MaxT") ->
+  pick_MaxT
+(weatherAtLocation$elementName=="MinT") ->
+  pick_MinT
+weatherAtLocation$time[pick_MaxT][[1]]$parameter$parameterName[[1]] -> maxT
+weatherAtLocation$time[pick_MinT][[1]]$parameter$parameterName[[1]] -> minT
+
+glue::glue("{locationInput} {dateInput} 氣溫，最高{maxT}度，最低{minT}度。")
+```
+```{r}
+#practice glue
+glue:: glue("{locationInput} {dateInput} 氣溫，最高{maxT}度，最低{minT}度。")
+```
+

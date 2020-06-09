@@ -120,3 +120,200 @@ glue::glue("{locationInput} {dateInput} 氣溫，最高{maxT}度，最低{minT}�
 glue:: glue("{locationInput} {dateInput} 氣溫，最高{maxT}度，最低{minT}度。")
 ```
 
+```{r}
+askSilly_weather <- function(locationInput,dateInput){
+  jsonlite::fromJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization=rdec-key-123-45678-011121314&format=JSON") ->
+  weather_next36hours
+  
+  (weather_next36hours$cwbopendata$dataset$location$locationName == locationInput) -> pick_location
+  
+  weather_next36hours$cwbopendata$dataset$location$weatherElement[pick_location][[1]] -> weatherAtLocation
+  (weatherAtLocation$elementName=="MaxT") ->
+    pick_MaxT
+  (weatherAtLocation$elementName=="MinT") ->
+    pick_MinT
+  weatherAtLocation$time[pick_MaxT][[1]]$parameter$parameterName[[1]] -> maxT
+  weatherAtLocation$time[pick_MinT][[1]]$parameter$parameterName[[1]] -> minT
+  
+  glue::glue("{locationInput} {dateInput} 氣溫，最高{maxT}度，最低{minT}度。")
+}
+```
+
+```{r}
+#practice ask silly weather機器人
+askSilly_weather<- function(locationInput,dateInput){
+  jsonlite::fromJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization=rdec-key-123-45678-011121314&format=JSON") ->
+  weather_next36hours
+  
+  (weather_next36hours$cwbopendata$dataset$location$locationName == locationInput) -> pick_location
+  
+  weather_next36hours$cwbopendata$dataset$location$weatherElement[pick_location][[1]] -> weatherAtLocation
+  
+  (weatherAtLocation$elementName=="MaxT") ->
+    pick_MaxT
+  (weatherAtLocation$elementName=="MinT") ->
+    pick_MinT
+  
+  weatherAtLocation$time[pick_MaxT][[1]]$parameter$parameterName[[1]] -> maxT
+  weatherAtLocation$time[pick_MinT][[1]]$parameter$parameterName[[1]] -> minT
+  
+    glue::glue("{locationInput} {dateInput} 氣溫，最高{maxT}度，最低{minT}度。")
+}
+```
+
+```{r}
+library(lubridate)
+```
+
+```{r}
+askSilly_weather("臺中市",today())
+askSilly_weather("花蓮縣",today())
+```
+
+```{r}
+#取出答案
+askSilly_weather("臺中市",today())
+askSilly_weather("花蓮縣",today())
+```
+
+```{r}
+#打造國際時間機器人
+what_time_it_is <-
+  function(t){
+    timeExchange<-lubridate:: with_tz(now(),tzone=t)
+    return(timeExchange)
+  }
+#check the ans
+what_time_it_is("Europe/Paris")
+```
+
+```{r}
+class(demand_return)
+```
+
+```{r}
+# 查詢函數formals arguments要求
+formals(askSilly_weather)
+# 查詢函數主體
+body(askSilly_weather)
+```
+
+```{r}
+#practice
+formals(askSilly_weather)
+body(askSilly_weather)
+```
+```{r}
+#函數可以存在list裡面
+
+learning_topics <- 
+  list(
+    subject="函數",
+    date=lubridate::ymd("2020-06-03"),
+    functionsCreated=list(
+      demand=demand_return # 等號右邊是呼叫demand_return的定義值，也就是function(...){...}值定義本身。
+    )
+  )
+```
+
+
+```{r}
+#practice
+learning_topics<-
+  list(
+    subject="函數",
+    date=lubridate::ymd("2020-06-03"),
+    functionCreated=list(
+      demand=demand_return
+    )
+  )
+
+```
+
+```{r}
+#從list中取出新存的demand_return(demand)
+rm(demand_return)
+learning_topics$functionCreated$demand(1.2)
+```
+
+```{r}
+typeof(demand_return)
+```
+
+
+```{r}
+# 查詢函數執行所要求環境
+environment(demand_return)
+```
+
+```{r}
+# 若函數執行需要Global environment已存在某些物件，查詢需要哪些物件
+codetools::findGlobals(demand_return)
+```
+
+```{r}
+#practice type
+typeof(demand_return)
+```
+
+```{r}
+#practice environment
+environment(demand_return)
+```
+
+```{r}
+#practicecodetools
+codetools::findGlobals(demand_return)
+```
+
+```{r}
+intercept <- 10
+slope <- -5
+myDemand <- function(p){
+  q_d <- intercept + slope*p
+  return(q_d)
+}
+```
+
+```{r}
+#practice another func
+intercept<-10
+slope<-5
+myDemand <-function(p){
+  q_d<-intercept+slope*p
+  return(q_d)
+}
+```
+
+```{r}
+environment(demand_return)
+environment(myDemand)
+```
+
+```{r}
+codetools::findGlobals(demand_return)
+codetools::findGlobals(myDemand)
+```
+
+```{r}
+myDemand2 <- function(p, intercept=10, slope=-5){
+  q_d <- intercept + slope*p
+  return(q_d)
+}
+```
+
+```{r}
+#practice 
+myDemand2 <- function(p,intercept=10,slope=-5){
+  q_d <-intercept+slope*p
+  return(q_d)
+}
+```
+
+```{r}
+codetools::findGlobals(myDemand2)
+```
+```{r}
+myDemand2(1.2,slope=-1)
+```
+
